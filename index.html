@@ -677,7 +677,7 @@ function elfEv(){const a=G.flags.elfArc,st=a.stage||1,hunt=()=>{fight(mk(G.lv+2,
  return{t:st==1?'The elves have returned. They burn border villages and swear that humans slaughtered their elders. You sense a devil’s hand behind the lie: humans are being blamed for what a devil did.':'The elves return, angrier than before. Their warbands march on the capital. Only the truth can stop them.',c:cs}}
 function pickEv(bad){const pl=EVL.filter(x=>!!x.bad==bad&&G.age>=x.min&&(!x.ok||x.ok()));if(!pl.length)return EVL.find(x=>!x.bad);let u=pl.filter(x=>!G.seen[x.id]);if(!u.length){pl.forEach(x=>delete G.seen[x.id]);u=pl}const e=u[R(u.length)];G.seen[e.id]=1;return e}
 function encounter(cat){const pl=TE[cat].filter(x=>G.age>=x.min&&(!x.ok||x.ok()));if(!pl.length)return;G.q=[pl[R(pl.length)]];G.res=null;G.evh='An encounter!';G.view='ev'}
-function pick(i){const e=G.q[0];G.res=e.c[i][1]();render()}
+function pick(i){const e=G.q[0],r=e.c[i][1]();if(r===''){nextEv();return}G.res=r;render()}
 function nextEv(){G.q.shift();G.res=null;G.view=G.q.length?'ev':'main';render()}
 /* ---------- time ---------- */
 function advance(n,o={}){const m=o.nr?1:G.age<13?n:n==1?1:n==7?7:n==30?24:182;let sum='';
