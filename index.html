@@ -473,7 +473,7 @@ function decide(k){if(!B||!B.won||B.dec)return;B.dec=1;const e=B.e,nm=e.n,F=G.fl
  if(e.crim){G.kcrim=(G.kcrim||0)+1;B.log.push(`You end ${nm}. The roads are a little safer.`);if(G.kcrim%5==0)G.wrath++}else{G.kills++;G.wrath+=3;G.heart-=2;B.log.push(`You kill ${nm}. It was not necessary, and word spreads.`)}
  if(B.o.tourn){F.tbanned=1;G.wrath+=2;B.log.push('Killing in a goodwill tournament is unforgivable. You are disqualified and banned from the arena for life.')}if(B.o.test){F.examBan=G.age+3;G.wrath+=2;B.log.push('Killing during a test is grounds for termination. You are barred from the exams for three years.')}
  if(named)F.vil[nm]='killed';if(wr)delete G.rel[nm];render()}
-function done(){const w=B.won;if(B.admit){joinSquad('Black Bull')}const af=B.o.after;if(af){const ev=af();if(G.q&&G.q.length)G.q.splice(1,0,ev);else{G.q=[ev];G.res=null;G.evh=B.o.exam?'Exam results':'Aftermath'}G.prevView='ev'}G.view=(G.prevView=='ev'&&G.q&&G.q.length)?'ev':'main';if(!w)G.msg='';B=null;render()}
+function done(){const w=B.won;if(B.admit){joinSquad('Black Bull')}const af=B.o.after;let fm='';if(af){const ev=af();if(ev&&ev.m)fm=ev.m;else if(ev){if(G.q&&G.q.length)G.q.splice(1,0,ev);else{G.q=[ev];G.res=null;G.evh=B.o.exam?'Exam results':'Aftermath'}G.prevView='ev'}}G.view=(G.prevView=='ev'&&G.q&&G.q.length)?'ev':'main';if(!w)G.msg='';if(fm)G.msg=fm;B=null;render()}
 /* ---------- people ---------- */
 const MCAP=r=>r.el&&[G.aff,G.sub].includes(r.el)&&!G.nomag?4:2,TCH=[[2,'ki','kisense','Ki Sense','Sense life force, no magic needed: +3% dodge and a Ki Sense stance.'],[4,'zone','mzone','Mana Zone','Perceive all mana nearby: dodge, fortify and regain mana.'],[6,'nature','commune','Nature Communion','Connect with nature: +10% max mana and a regenerating Communion move.']];
 function mTeach(n,r,sm,last){if(G.age<15)return;G.tech=G.tech||{};r.tl=r.tl||0;const cap=sm&&!G.nomag?4:2,L=[];
@@ -852,7 +852,7 @@ const av=g=>`<svg width=44 height=44 viewBox="0 0 44 44"><circle cx=22 cy=24 r=1
 const hdr=m=>`<div class=c><div class=row><div class=row style="justify-content:flex-start">${av(G)}<div><b>${esc(G.name)}${G.last?' '+esc(G.last):''}</b> <span class=tag>${G.race}</span>${G.gender?` <span class=tag>${G.gender}</span>`:''}<br><span class=mu>Age ${G.age} · Day ${G.day}/365 · Lv ${G.lv} · ${G.gold}g${G.sp?` · ${G.sp} SP`:''}</span></div></div></div>
 <div class=row style="margin-top:6px"><span class=mu>⚡${G.en}/${me()}</span>${bar(G.en,me(),'#e0a800')}<span class=mu>❤${G.hp}/${mh()}</span>${bar(G.hp,mh(),'#d64550')}<span class=mu>✦${G.nomag&&G.amn>0?'−'+Math.round(G.amn):G.mp+'/'+mm()}</span>${G.nomag&&G.amn>0?bar(G.amn,Math.max(100,G.amn),'#7a3ad5'):bar(G.mp,mm(),'#3a7bd5')}</div>${!m&&G.view=='main'?'<div class=rl><button onclick=skip(1)>+1 Day</button><button onclick=skip(7)>+1 Week</button><button onclick=skip(30)>+1 Month</button><button onclick=skip(365)>+1 Year</button></div><div class=mu style="margin-top:4px">Skipping repeats today’s routine: week ×7, month ×24, year ×182.</div>':''}</div>`;
 const TABS=['Do','School','Jobs','Family','Friends','Knights','Trades','Shop','Inventory','Tower','Forge','Stats'];
-const tabs=()=>`${MP.room?`<div class=mu style="margin:4px">🌐 ${esc(MP.dn)} · ${mpOnline()} online</div>`:''}<div class=tabs>${[...TABS,...(MP.room?['Players']:[])].filter(t=>t!='Knights'||G.age>=15).map(t=>`<button class="${G.tab==t?'on':''}" onclick="G.tab='${t}';render()">${t}</button>`).join('')}</div>`;
+const tabs=()=>`${MP.room?`<div class=mu style="margin:4px">🌐 ${esc(MP.dn)} · ${mpOnline()} online</div>`:''}<div class=tabs>${[...TABS,...(MP.room?['Players']:[])].filter(t=>t!='Knights'||G.age>=15).map(t=>`<button class="${G.tab==t?'on':''}" onclick="G.tab='${t}';render()">${t}${t=='Players'&&(MP.req||[]).length?` 🔴${MP.req.length}`:''}</button>`).join('')}</div>`;
 function taskCards(tab){return T.filter(t=>t.tab==tab&&(t.id!='cond'||hasAnti())).sort((a,b)=>tab=='Jobs'?a.age-b.age:0).map(t=>{const c=cost(t),lk=G.age<t.age?`Unlocks at age ${t.age}`:t.need&&!t.need()?(t.id=='magic'?'You have no magic':t.id=='cond'?'Needs the anti-magic awakening':t.id=='rest'?'Already rested today':t.id=='bsw'?'Train at the smithy first':t.id=='cmage'?'Needs your grimoire':'Needs a mentor'):'';
  const sel=t.id=='ment'&&G.mentor?`<select style="width:auto;margin:4px 0 0" onchange="G.mfocus=this.value">${MFOC.map(s=>`<option value=${s}${G.mfocus==s?' selected':''}>${mfl(s)}</option>`).join('')}</select>`:'';
  const ic=t.i&&G.age>=8&&G.age<13?`<span class=mu>🔒 Intense training unlocks at age 13.</span>`:t.i&&G.age>=13?`<button class=g ${G.en<icost()||G.view!='main'?'disabled':''} onclick="doI('${t.id}')">🔥 Intense (⚡${icost()})</button>`:'';
@@ -1080,7 +1080,7 @@ async function mpHost(){const dn=(($('#mpn')&&$('#mpn').value)||'').trim().slice
 async function mpJoin(rn,mode){MP.deny=[];await mpEnter(rn,(mpRooms().find(r=>r.rn==rn)||{}).dn||rn,mode,0)}
 async function mpEnter(rn,dn,mode,host){if(!MP.lob){MP.err='Multiplayer is not available.';render();return}if(MP.room)await mpLeaveRoom();
  let room=null;try{room=await MP.lob.join(rn)}catch(e){MP.err='Could not join the room ('+(e&&e.code||'error')+').';render();return}
- MP.room=room;MP.rn=rn;MP.dn=dn;MP.mode=mode;MP.host=!!host;MP.players=[];MP.tq=[];MP.nq=[];MP.lastP='';MP.hostPres=null;
+ MP.room=room;MP.rn=rn;MP.dn=dn;MP.mode=mode;MP.host=!!host;MP.players=[];MP.tq=[];MP.nq=[];MP.info=[];MP.req=[];MP.lastP='';MP.hostPres=null;
  room.on('g',mpRecv);room.onPeers(mpPeers);
  if(host){lss(MPK+'room-'+rn,JSON.stringify(MP.rec||{dn,mode,deny:MP.deny,players:{}}));mpLobPres()}
  MP.scr='pick';const sl='mp-'+rn.slice(3);
@@ -1106,7 +1106,7 @@ const mpLbl=n=>n==1?'a day':n==7?'a week':n==30?'a month':n>=365?'a year':n+' da
 function mpGate(n){if(!MP.room)return true;if(mpWait()){G.msg='Waiting for another player to join this room.';render();return false}if(!mpCanAdv()){G.msg='The host has not allowed you to advance time.';render();return false}mpSend(null,'time',{n});return true}
 function mpRecv(m){const d=m&&m.data;if(!d||typeof d!='object'||m.isMe&&m.sameTab||!G||!MP.room)return;const me=mpPid();if(d.f===me)return;if(d.to&&d.to!==me)return;const t=d.t,x=d.d||{};
  if(d.id){if(MP.seen[d.id])return;MP.seen[d.id]=1}
- const from=String(d.n||'A player').slice(0,30);
+ const from=String(d.n||'A player').slice(0,30);MP.cur=d.f;
  if(t=='time'){const n=+x.n;if(!(n>=1&&n<=400))return;if(MP.host&&MP.deny.includes(d.f))return;if(!MP.host&&MP.hostPres&&Array.isArray(MP.hostPres.deny)&&MP.hostPres.deny.includes(d.f))return;MP.tq.push({n,from});mpFlush();return}
  if(t=='ack'){delete MP.out[x.id];return}
  if(t=='gold'){const a=Math.floor(+x.a);if(!(a>=1&&a<=1e7))return;G.gold+=a;mpSend(d.f,'ack',{id:d.id});mpNoteTxt(`💰 ${from} gifted you ${a} gold!`);return}
@@ -1119,7 +1119,7 @@ function mpRecv(m){const d=m&&m.data;if(!d||typeof d!='object'||m.isMe&&m.sameTa
  if(t=='pinv'){mpNoteTxt(`🧭 ${from} asks you to join their party. When one of you goes into battle, the other joins automatically.`,[['Join the party',()=>{G.mpParty=G.mpParty||[];if(!mpPartyHas(d.f))G.mpParty.push({pid:d.f,nm:from});mpSend(d.f,'pacc',{});return`You joined ${from}’s party.`}],['Decline',()=>'You decline.']]);return}
  if(t=='pacc'){G.mpParty=G.mpParty||[];if(!mpPartyHas(d.f))G.mpParty.push({pid:d.f,nm:from});mpNoteTxt(`${from} joined your party!`);return}
  if(t=='pleave'){G.mpParty=(G.mpParty||[]).filter(q=>q.pid!=d.f);mpNoteTxt(`${from} left your party.`);return}
- if(t=='share'){const a=Math.floor(+x.xp);if(!(a>=1&&a<=100000))return;mpNoteTxt(`⚔ You fought alongside ${from}. +${a} XP!`,[['OK',()=>{addXp(a);return''}]]);return}
+ if(t=='share'){const a=Math.floor(+x.xp);if(!(a>=1&&a<=100000))return;addXp(a);mpNoteTxt(`⚔ You fought alongside ${from}. +${a} XP!`);return}
  if(t=='intro'){const nm=String(x.nm||'').slice(0,30).trim();if(!nm||/^[_$]/.test(nm)||nm=='__proto__'||nm=='constructor'||nm=='prototype')return;const age=Math.floor(+x.age);const ism=!!x.m&&!!MEN[nm];
   if(G.rel[nm]){mpNoteTxt(`${from} brings up ${nm}, but you already know them.`);return}
   G.rel[nm]={role:'friend',bond:1,el:String(x.el||'Fire').slice(0,20),g:x.g=='Girl'?'Girl':'Boy',rom:0,age:age>=1&&age<=300?age:G.age,race:x.race?String(x.race).slice(0,30):undefined,by:from,lbl:ism?`${from}’s mentor`:`introduced by ${from}`};
@@ -1136,7 +1136,7 @@ const mpNm=pid=>{const p=MP.players.find(x=>x.pid==pid);return p?p.nm:'A player'
 const mpPartyHas=pid=>(G.mpParty||[]).some(q=>q.pid==pid);
 function mpAllies(o){if(!MP.room||!G||!(G.mpParty||[]).length||o.kill||o.exam||o.pvp||o.cap)return[];if(o.spar){const r=o.who&&G.rel[o.who];if(!r||['friend','family','mentor','love'].includes(r.role))return[]}return MP.players.filter(p=>p.on&&p.sn&&mpPartyHas(p.pid))}
 function mpAllyHit(){let t=0;const n=[];B.mpa.forEach(p=>{const a=Math.round((p.sn.lv*1.2+3)*.3);t+=a;n.push(`${p.nm} ${a}`)});if(t>0&&B.fo.hp>0){B.fo.hp-=t;B.log.push(`Your party strikes together: ${n.join(', ')} (${t} damage)!`);reap()}}
-function mpDuel(p){const e=mk(p.sn.lv,{n:p.nm,el:p.sn.el,sub:p.sn.sub,b:'soft',ppl:1},0);e.hp=p.sn.hp;e.atk=p.sn.atk;e.def=p.sn.def;e.agi=p.sn.agi;fight(e,{spar:1,pvp:1,after:()=>{mpSend(p.pid,'chalRes',{won:B.won?1:0});return{t:B.won?`You defeated ${p.nm} in the duel! They are told the result.`:`${p.nm} defeated you in the duel. They are told the result.`,c:[['OK',()=>'']]}}})}
+function mpDuel(p){const e=mk(p.sn.lv,{n:p.nm,el:p.sn.el,sub:p.sn.sub,b:'soft',ppl:1},0);e.hp=p.sn.hp;e.atk=p.sn.atk;e.def=p.sn.def;e.agi=p.sn.agi;fight(e,{spar:1,pvp:1,after:()=>{mpSend(p.pid,'chalRes',{won:B.won?1:0});return{m:B.won?`You defeated ${p.nm} in the duel! They are told the result.`:`${p.nm} defeated you in the duel. They are told the result.`}}})}
 function mpAct(pid,t){const p=mpPl(pid);if(!p||G.view!='main')return;
  if(t=='chal'){mpSend(pid,'chal',{});G.msg=`You challenged ${p.nm}. Waiting for their answer…`}
  else if(t=='pinv'){if(mpPartyHas(pid)){G.mpParty=G.mpParty.filter(q=>q.pid!=pid);mpSend(pid,'pleave',{});G.msg=`You left ${p.nm}’s party.`}else{mpSend(pid,'pinv',{});G.msg=`You invited ${p.nm} to your party. Waiting for their answer…`}}
@@ -1148,10 +1148,11 @@ function mpMarry(pid,nm,pp){if(G.lover&&G.rel[G.lover]&&!G.rel[G.lover].pl)G.rel
 function mpPoolSync(){if(!MP.room||!G)return;const l=G.mar&&G.lover&&G.rel[G.lover];if(!l||!l.pl)return;if(G.mpg==null)G.mpg=G.gold;const d=G.gold-G.mpg;if(d){G.mpg=G.gold;G.mpTot=(G.mpTot||0)+d}
  const on=!!mpPl(l.pl);if(on&&(MP.lastTot!==G.mpTot||MP.gwas!==on)){mpSend(l.pl,'pool',{tot:G.mpTot||0});MP.lastTot=G.mpTot}MP.gwas=on}
 function mpIntro(pid){const k=$('#mgn_'+pid)&&$('#mgn_'+pid).value,r=k&&G.rel[k];if(!r||r.pl||r.role=='family'||G.view!='main')return;const ism=r.role=='mentor'&&MEN[k];mpSend(pid,'intro',{nm:k,el:r.el||'Fire',g:r.g||gOf(k)||'Boy',age:npcAge(k,r),race:r.race||null,m:ism?1:0});G.msg=`You introduced ${k} to ${mpNm(pid)}.`;render()}
-function mpNoteTxt(t,c){MP.nq.push({t,c:c||[['OK',()=>'']]});mpFlush()}
+function mpNoteTxt(t,c){MP.info=MP.info||[];MP.req=MP.req||[];if(c&&MP.cur){MP.req=MP.req.filter(r=>!(r.pid==MP.cur&&r.t==t));MP.req.push({pid:MP.cur,t,c});MP.info.push(`📬 ${mpNm(MP.cur)} sent you a request. Open the Players tab to answer it.`)}else MP.info.push(t);mpFlush()}
+function mpReq(pid,i,ci){const j=MP.req.findIndex((r,k)=>r.pid==pid&&k==i);if(j<0)return;const r=MP.req.splice(j,1)[0];G.msg='';let res='';try{res=r.c[ci][1]()}catch(e){}if(res)G.msg=res;if(G.view=='main')render()}
 function mpFlush(nr){if(!G||!MP.room||MP.fl)return;MP.fl=1;let ch=0;try{
  while(MP.tq.length&&G&&G.view=='main'&&(!G.q||!G.q.length)){const e=MP.tq.shift();G.msg='';advance(e.n);say(`🌐 ${e.from} moved time forward ${mpLbl(e.n)}.`);ch=1}
- if(G&&G.view=='main'&&MP.nq.length){G.q=G.q||[];while(MP.nq.length)G.q.push(MP.nq.shift());G.view='ev';G.res=null;G.evh='🌐 '+MP.dn;ch=1}
+ if(G&&G.view=='main'&&MP.info&&MP.info.length){const u=[...new Set(MP.info.splice(0))];say('🌐 '+u.join(' '));ch=1}
  }finally{MP.fl=0}if(ch&&!nr)render()}
 function mpGold(pid){const el=$('#mgg_'+pid),a=Math.floor(+(el&&el.value));if(!(a>=1)||a>G.gold||G.view!='main')return;G.gold-=a;const id=mpSend(pid,'gold',{a});mpTrack(id,()=>{G.gold+=a},`${a} gold`);G.msg=`You sent ${a} gold.`;render()}
 function mpTrack(id,refund,what){if(!id)return;MP.out[id]=1;if(typeof setTimeout=='function')setTimeout(()=>{if(MP.out[id]){delete MP.out[id];if(G){refund();G.msg=`${what} could not be delivered and was returned to you.`;render()}}},8000)}
@@ -1168,6 +1169,7 @@ function playersHtml(){const ps=MP.players,me=pname();
  const gl=mpGearList(),il=Object.keys(G.inv);
  ps.forEach(p=>{h+=`<div class=c><b>${esc(p.nm)}</b> ${p.on?'<span class=ok>● online</span>':'<span class=mu>○ offline</span>'}${p.host?' 👑':''}${p.on?`<p class=mu>Age ${p.age} · Lv ${p.lv} · ${esc(p.el)} · ${esc(p.race)}</p>`:''}
  ${MP.host?`<label class=mu><input type=checkbox ${MP.deny.includes(p.pid)?'':'checked'} onchange="mpTog('${p.pid}')"> Allowed to advance time</label>`:''}
+ ${(MP.req||[]).map((r,ri)=>r.pid==p.pid?`<div class=c style="border:1px solid #9b7bff;margin:6px 0"><p>${esc(r.t)}</p><div class=rl>${r.c.map((b,ci)=>`<button ${ci?'class=g':''} onclick="mpReq('${p.pid}',${ri},${ci})">${esc(b[0])}</button>`).join('')}</div></div>`:'').join('')}
  ${p.on?`<div class=rl><input id=mgg_${p.pid} type=number min=1 placeholder="Gold" style="width:90px"><button onclick="mpGold('${p.pid}')">Gift gold</button></div>
  <div class=rl>${il.length?`<select id=mgi_${p.pid} style="width:auto">${il.map(k=>`<option value="${esc(k)}">${esc(k)} ×${G.inv[k]}</option>`).join('')}</select><input id=mgq_${p.pid} type=number min=1 value=1 style="width:60px"><button onclick="mpItem('${p.pid}')">Give item</button>`:'<span class=mu>No items to give.</span>'}</div>
  <div class=rl><button onclick="mpAct('${p.pid}','chal')">⚔ Challenge</button><button class=g onclick="mpAct('${p.pid}','pinv')">${mpPartyHas(p.pid)?'Leave party':'🧭 Invite to party'}</button>${mpCanProp(p)?`<button class=g onclick="mpAct('${p.pid}','prop')">💍 Propose</button>`:`<span class=mu>${esc(mpPropWhy(p)||'')}</span>`}${G.mar&&G.rel[G.lover]&&G.rel[G.lover].pl==p.pid?'<span class=tag>💞 your spouse</span>':''}${mpPartyHas(p.pid)?'<span class=tag>in your party</span>':''}</div>
